@@ -9,15 +9,6 @@
 
 #define FOR(i,b,e) for((i)=(b); (i)<(e); ++i)
 
-int length(const char* str)
-{
-    int len=0,i;
-    for(i=0;str[i]!='\0';++i)
-        ;
-    len = i;
-    return len;
-}
-
 char** strArray(int strNum)
 {
     char** result;
@@ -31,16 +22,41 @@ char** strArray(int strNum)
     return result;
 }
 
-bool chkPalin(char* str)
+void delChr(char* str, char ch)
 {
-    int mid=length(str)/2,i;
-    printf("%s : length = %d, mid index = %d\n", str, length(str), mid);
+    for(;(*str)!='\0'; ++str){
+        if(*str == ch){
+            strcpy(str, str+1);
+            str--;
+        }
+    }
+}
+
+bool chkPalin(const char* str)
+{
+    int mid=strlen(str)/2,i;
     FOR(i,0,mid)
-        if(str[i] == str[length(str)-1-i])
+        if(str[i] == str[strlen(str)-1-i])
             continue;
         else
             return false;
     return true;
+}
+
+bool reChkPalin(char* str)
+{
+    int mid=strlen(str)/2,i;
+    FOR(i,0,mid){
+        if(str[i] != str[strlen(str)-1-i]){
+            delChr(str, str[strlen(str)-1-i]);
+            break;
+        }
+    }
+
+    if(chkPalin(str))
+        return true;
+    else
+        return false;
 }
 
 int main()
@@ -69,11 +85,14 @@ int main()
         if(chkPalin(strList[i]))
             strcat(result,"1\n");
         else{
-            strcat(result,"not pandlin.\n");
+            if(reChkPalin(strList[i]))
+                strcat(result,"2\n");
+            else
+                strcat(result,"3\n");
         }
     }
 
-    result[length(result)-1] = '\0';
+    result[strlen(result)-1] = '\0';
     fprintf(outfp, "%s", result);
 
     fclose(outfp);
