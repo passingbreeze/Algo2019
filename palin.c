@@ -48,7 +48,7 @@ bool reChkPalin(char* str)
     int mid=strlen(str)/2,i;
     FOR(i,0,mid){
         if(str[i] != str[strlen(str)-1-i]){
-            delChr(str, str[strlen(str)-1-i]);
+            delChr(str, str[i]);
             break;
         }
     }
