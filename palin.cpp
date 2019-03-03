@@ -28,17 +28,19 @@ bool reChkPalin(const string& str)
     auto strBeg = str.begin();
 
     fPart.insert(fPart.begin(), strBeg, strBeg+mid);
-    fSub = fPart;
     bPart.insert(bPart.begin(), str.rbegin(), str.rbegin()+mid);
-    bSub = bPart;
+    cout << fPart << " \n " << bPart << endl;
 
     FOR(i,0,mid){
         if(fPart[i] != bPart[i]){
-            fSub.erase(fPart.find(fPart[i]));
-            bSub.erase(bPart.find(bPart[i]));
-            if(fPart.find_first_of(bSub) || bPart.find_first_of(fSub)){
-                fSub.clear();
-                bSub.clear();
+            fSub.insert(fSub.begin(), fPart.begin(), fPart.end());
+            bSub.insert(bSub.begin(), bPart.begin(), bPart.end());
+            fSub.erase(find(fSub.begin(), fSub.end(), fPart[i]));
+            bSub.erase(find(bSub.begin(), bSub.end(), bPart[i]));
+//            cout << fSub << " || " << bSub << endl;
+//            cout << "true! -> " << fPart.find(bSub) << " " << bPart.find(fSub) << endl;
+            if(fPart.find(bSub)!=string::npos || bPart.find(fSub)!=string::npos){
+                cout << "true! -> " << fPart.find(bSub) << " " << bPart.find(fSub) << endl;
                 return true;
             }
         }
