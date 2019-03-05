@@ -11,42 +11,14 @@
 
 #include <vector>
 #include <string>
+#include <chrono>
 
 #define FOR(i,b,e) for((i)=(b); (i)<(e); ++i)
-#define reFOR(i,e,b) for((i)=((e)-1); (i)>=(b); --i)
+#define ALL(x) ((x).begin()),((x).end())
 
 using namespace std;
+using namespace chrono;
 vector<string> strVec;
-
-bool reChkPalin(const string& str)
-{
-    int strlen = int(str.length());
-    int mid = strlen/2;
-    int i;
-
-    string fPart, bPart, fSub, bSub;
-    auto strBeg = str.begin();
-
-    fPart.insert(fPart.begin(), strBeg, strBeg+mid);
-    bPart.insert(bPart.begin(), str.rbegin(), str.rbegin()+mid);
-    cout << fPart << " \n " << bPart << endl;
-
-    FOR(i,0,mid){
-        if(fPart[i] != bPart[i]){
-            fSub.insert(fSub.begin(), fPart.begin(), fPart.end());
-            bSub.insert(bSub.begin(), bPart.begin(), bPart.end());
-            fSub.erase(find(fSub.begin(), fSub.end(), fPart[i]));
-            bSub.erase(find(bSub.begin(), bSub.end(), bPart[i]));
-//            cout << fSub << " || " << bSub << endl;
-//            cout << "true! -> " << fPart.find(bSub) << " " << bPart.find(fSub) << endl;
-            if(fPart.find(bSub)!=string::npos || bPart.find(fSub)!=string::npos){
-                cout << "true! -> " << fPart.find(bSub) << " " << bPart.find(fSub) << endl;
-                return true;
-            }
-        }
-    }
-    return false;
-}
 
 bool chkPalin(const string& str)
 {
@@ -58,13 +30,33 @@ bool chkPalin(const string& str)
     return true;
 }
 
+bool reChkPalin(const string& str)
+{
+    int i;
+    int strlen = int(str.length());
+    string s, r;
+
+    FOR(i,0,strlen){
+        s = str.substr(0,i)+str.substr(i+1);
+        r = s;
+        reverse(ALL(r));
+        if(r == s)
+            return true;
+    }
+    return false;
+}
 
 int main()
 {
+    system_clock time;
+    duration<double> diff_time;
+    auto begin = time.now();
+
     ifstream ifs("palin.inp", ios::binary);
     ofstream ofs("palin.out", ios::binary);
     istringstream iss;
     ostringstream oss;
+
 
     int i, num = 0;
     string inp, result;
@@ -99,5 +91,8 @@ int main()
 
     ofs.close();
     ifs.close();
+    auto end = time.now();
+    diff_time = end - begin;
+    cout << "tot time : " << diff_time.count() << " sec(s)\n";
     return EXIT_SUCCESS;
 }
