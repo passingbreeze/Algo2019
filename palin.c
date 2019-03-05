@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <limits.h>
 #include <string.h>
 
 #define FOR(i,b,e) for((i)=(b); (i)<(e); ++i)
+#define reFOR(i,e,b) for((i)=((e)-1); (i)>=(b); --i)
 
 char** strArray(int strNum)
 {
@@ -15,48 +17,81 @@ char** strArray(int strNum)
     int i;
 
     result = (char**)malloc(sizeof(char*)*strNum);
-    result[0] = (char*)malloc(sizeof(char)*strNum*BUFSIZ);
+    result[0] = (char*)malloc(sizeof(char)*strNum*(BUFSIZ*100));
     FOR(i,1,strNum)
-        result[i] = result[i-1] + BUFSIZ;
+        result[i] = result[i-1] + (BUFSIZ*100);
 
     return result;
 }
 
-void delChr(char* str, char ch)
+char* delChr(char* str, char ch)
 {
-    for(;(*str)!='\0'; ++str){
-        if(*str == ch){
-            strcpy(str, str+1);
-            str--;
+    char *temp = (char*)malloc(sizeof(char)*(BUFSIZ*100));
+    strcpy(temp,str);
+    for(;(*temp)!='\0'; ++temp){
+        if(*temp == ch){
+            strcpy(temp, temp+1);
+            temp--;
         }
     }
+    return temp;
 }
 
 bool chkPalin(const char* str)
 {
-    int mid=strlen(str)/2,i;
+    int mid = strlen(str)/2;
+    int i;
     FOR(i,0,mid)
-        if(str[i] == str[strlen(str)-1-i])
-            continue;
-        else
+        if(str[i] != str[strlen(str)-1-i])
             return false;
     return true;
 }
 
 bool reChkPalin(char* str)
 {
-    int mid=strlen(str)/2,i;
+    int mid = strlen(str)/2;
+    int i;
+
+    char *fPart = (char*)malloc(sizeof(char)*(BUFSIZ*100));
+    char *bPart = (char*)malloc(sizeof(char)*(BUFSIZ*100));
+    char *fSub = (char*)malloc(sizeof(char)*(BUFSIZ*100));
+    char *bSub = (char*)malloc(sizeof(char)*(BUFSIZ*100));
+    strncpy(fPart, str, mid);
+
+    reFOR(i,strlen(str), mid)
+        bPart[strlen(str)-1-i] = str[i];
+
+//    printf("%s || %s\n%d || %d\n", fPart, bPart, strlen(fPart), strlen(bPart));
+
     FOR(i,0,mid){
-        if(str[i] != str[strlen(str)-1-i]){
-            delChr(str, str[strlen(str)-1-i]);
-            break;
+        if(fPart[i] != bPart[i]){
+            strcpy(fSub, delChr(fPart, fPart[i]));
+            strcpy(bSub, delChr(bPart, bPart[i]));
+            printf("%s %s\n", fSub, bSub);
+            if(strstr(bPart, fSub) || strstr(fPart, bSub)){
+
+                if(fSub != NULL)
+                    free(fSub);
+
+                if(bSub != NULL)
+                    free(bSub);
+
+                free(bPart);
+                free(fPart);
+                return true;
+            }
         }
     }
 
-    if(chkPalin(str))
-        return true;
-    else
-        return false;
+    if(fSub != NULL)
+        free(fSub);
+
+    if(bSub != NULL)
+        free(bSub);
+
+    free(bPart);
+    free(fPart);
+    return false;
 }
 
 int main()
@@ -72,7 +107,7 @@ int main()
 
     int i, num;
     char **strList;
-    char result[BUFSIZ] = "";
+    char result[11] = "";
 
     fscanf(infp, "%d", &num);
 
@@ -81,7 +116,8 @@ int main()
     FOR(i, 0, num)
         fscanf(infp, "%s", strList[i]);
 
-    FOR(i,0,num){
+    FOR(i, 0, num){
+        printf("%s\n", strList[i]);
         if(chkPalin(strList[i]))
             strcat(result,"1\n");
         else{
