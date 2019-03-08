@@ -5,31 +5,28 @@ public class palin {
     private static ArrayList<String> strList = new ArrayList<>();
     private static BufferedWriter bws =  new BufferedWriter(new OutputStreamWriter(System.out));
 
-    static boolean isPalin(String s){
-        int mid = s.length()/2;
-        int diff = (s.length())&1;
-        String r = new StringBuilder(s.substring(mid+diff)).reverse().toString();
-        return s.substring(0,mid).equals(r);
-    }
-
-    static ArrayList<String> delAchr(String o){
-        ArrayList<String> setStr = new ArrayList<>();
-        StringBuilder temp = new StringBuilder();
-        for (int i = 0; i < o.length(); i++){
-            temp.append(o.substring(0,i));
-            temp.append(o.substring(i+1));
-            setStr.add(temp.toString());
-            temp.setLength(0);
+    private static String chkPseudopalin(String s, String r){
+        if(s.equals(r))
+            return "1\n";
+        int dIdx;
+        StringBuilder ns = new StringBuilder(s);
+        StringBuilder nr = new StringBuilder(r);
+        for (dIdx = 0; dIdx < s.length(); dIdx++)
+            if(s.charAt(dIdx) != r.charAt(dIdx))
+                break;
+        ns.deleteCharAt(dIdx);
+        nr.deleteCharAt(r.length()-1-dIdx);
+        if((ns.toString()).equals(nr.toString()))
+            return "2\n";
+        else{
+            ns.setLength(0);
+            nr.setLength(0);
+            ns.append(s);
+            nr.append(r);
+            ns.deleteCharAt(s.length()-1-dIdx);
+            nr.deleteCharAt(dIdx);
+            return ((nr.toString()).equals(ns.toString())) ? "2\n" : "3\n";
         }
-        return setStr;
-    }
-
-    static Boolean isPseudoPalin(String o){
-        ArrayList<String> lst = delAchr(o);
-        for (int i = 0; i < lst.size(); i++)
-            if(isPalin(lst.get(i)))
-                return true;
-        return false;
     }
 
     public static void main(String[] args) throws IOException {
@@ -39,20 +36,17 @@ public class palin {
             BufferedReader br = new BufferedReader(new FileReader("palin.inp"));
             BufferedWriter bw = new BufferedWriter(new FileWriter("palin.out"));
             StringBuilder result = new StringBuilder();
+            StringBuilder revStr = new StringBuilder();
+
             sNum = Integer.parseInt(br.readLine());
 
             for (int i = 0; i < sNum; i++)
                 strList.add(br.readLine());
 
-            for (int i = 0; i < strList.size(); i++) {
-                if(isPalin(strList.get(i)))
-                    result.append("1\n");
-                else{
-                    if(isPseudoPalin(strList.get(i)))
-                        result.append("2\n");
-                    else
-                        result.append("3\n");
-                }
+            for (int i = 0; i < strList.size(); i++){
+                revStr.append(strList.get(i)).reverse();
+                result.append(chkPseudopalin(strList.get(i),revStr.toString()));
+                revStr.setLength(0);
             }
             result.deleteCharAt(result.length()-1);
             bw.write(result.toString());
@@ -61,7 +55,6 @@ public class palin {
         catch(FileNotFoundException e) {
             bws.write("File Not Found.");
         }
-//
 //        long end = System.currentTimeMillis();
 //        System.out.printf("Exec time : %.3f sec(s)", ((end-begin)/1000.0));
     }
